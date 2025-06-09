@@ -1,50 +1,9 @@
-<?php
-session_start();
-if (isset($_SESSION['user_id'])) {
-    header("Location: home.php");
-    exit;
-}
-$usersFile = 'users.json';
-$errors = [];
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['signup'])) {
-    $username = trim($_POST['username']);
-    $password = $_POST['password'];
-    if (empty($username) || empty($password)) {
-        $errors[] = "Username and password are required.";
-    }
-    if (strlen($username) < 3 || strlen($username) > 20) {
-        $errors[] = "Username must be 3-20 characters.";
-    }
-    if (strlen($password) < 6) {
-        $errors[] = "Password must be at least 6 characters.";
-    }
-    if (file_exists($usersFile)) {
-        $users = json_decode(file_get_contents($usersFile), true);
-        if (isset($users[$username])) {
-            $errors[] = "Username already exists.";
-        }
-    } else {
-        $users = [];
-    }
-    if (empty($errors)) {
-        $users[$username] = [
-            'id' => uniqid(),
-            'password' => password_hash($password, PASSWORD_DEFAULT)
-        ];
-        file_put_contents($usersFile, json_encode($users, JSON_PRETTY_PRINT));
-        $_SESSION['user_id'] = $users[$username]['id'];
-        $_SESSION['username'] = $username;
-        header("Location: home.php");
-        exit;
-    }
-}
-?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Funfiles</title>
+    <title>Funfiles - Upload</title>
     <link rel="icon" type="image/png" href="https://i.imgur.com/zZiqVZ4.png">
     <style>
         body {
@@ -104,9 +63,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['signup'])) {
             padding: 20px;
             width: calc(100% - 250px);
             transition: margin-left 0.3s ease;
-            display: flex;
-            justify-content: center;
-            align-items: center;
         }
         h1 {
             font-size: 28px;
@@ -120,28 +76,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['signup'])) {
             from { opacity: 0; }
             to { opacity: 1; }
         }
-        .form-container {
+        .upload-form {
             background: rgba(255, 255, 255, 0.1);
-            padding: 30px;
+            padding: 20px;
             border-radius: 15px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
             animation: slideUp 0.5s ease;
             max-width: 400px;
-            width: 100%;
+            margin: 0 auto;
         }
         @keyframes slideUp {
             from { transform: translateY(20px); opacity: 0; }
             to { transform: translateY(0); opacity: 1; }
         }
-        input[type="text"], input[type="password"] {
-            width: 100%;
-            padding: 10px;
+        input[type="file"] {
             margin: 10px 0;
-            border: 1px solid #fff;
-            border-radius: 10px;
-            background: rgba(255, 255, 255, 0.2);
             color: #fff;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
         button {
             padding: 10px 20px;
@@ -151,21 +101,41 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['signup'])) {
             border-radius: 10px;
             cursor: pointer;
             transition: transform 0.2s ease;
-            width: 100%;
         }
         button:hover {
             transform: scale(1.05);
         }
-        a {
+        .success {
+            padding: 15px;
+            margin-top: 20px;
+            border-radius: 10px;
+            background: rgba(42, 82, 152, 0.8);
             color: #fff;
-            text-decoration: none;
+            animation: popIn 0.5s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
         }
-        a:hover {
-            text-decoration: underline;
+        @keyframes popIn {
+            from { transform: scale(0); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+        .copy-link {
+            background: #1e3c72;
+            color: #fff;
+            padding: 5px 10px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+        .copy-link:hover {
+            transform: scale(1.05);
         }
         .error {
             padding: 15px;
-            margin-top: 10px;
+            margin-top: 20px;
             border-radius: 10px;
             background: rgba(255, 0, 0, 0.2);
             color: #fff;
@@ -182,26 +152,31 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['signup'])) {
     <div class="container">
         <div class="sidebar">
             <img src="https://i.imgur.com/zZiqVZ4.png" alt="Funfiles Logo">
-            <a href="home.php">Home</a>
-            <a href="index.php">Uploader</a>
-            <a href="filemanager.php">File Manager</a>
-            <a href="logout.php">Logout</a>
+            <a href="home.html">Home</a>
+            <a href="upload.html">Upload</a>
+            <a href="filemanager.html">File Manager</a>
+            <a href="logout.html">Logout</a>
         </div>
         <div class="content">
-            <div class="form-container">
-                <h1>Sign Up</h1>
-                <form action="" method="post">
-                    <input type="text" name="username" placeholder="Username" required>
-                    <input type="password" name="password" placeholder="Password" required>
-                    <button type="submit" name="signup">Sign Up</button>
-                    <p>Already have an account? <a href="login.php">Log In</a></p>
+            <h1>Upload Files</h1>
+            <div class="upload-form">
+                <form action="" method="post" enctype="multipart/form-data">
+                    <input type="file" name="fileToUpload" required>
+                    <br>
+                    <button type="submit" name="submit">Upload File</button>
                 </form>
-                <?php
-                if (!empty($errors)) {
-                    echo '<div class="error"><p>' . implode('<br>', $errors) . '</p></div>';
-                }
-                ?>
             </div>
+            <!-- Optional: Static success message example -->
+            <!--
+            <div class="success">
+                <input type="text" value="https://funfiles.xyz/uploads/sample_file.pdf" readonly style="width: 80%; padding: 5px; border: 1px solid #fff; border-radius: 0; font-family: monospace; background: rgba(255, 255, 255, 0.2);">
+                <button class="copy-link" onclick="navigator.clipboard.writeText('https://funfiles.xyz/uploads/sample_file.pdf'); alert('Link copied!');">Copy</button>
+            </div>
+            -->
+            <!-- Optional: Static error message example -->
+            <!--
+            <div class="error"><p>File size exceeds 100MB limit.</p></div>
+            -->
         </div>
     </div>
 </body>
