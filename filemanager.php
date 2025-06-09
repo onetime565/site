@@ -1,18 +1,3 @@
-<?php
-session_start();
-if (!isset($_SESSION['user_id'])) {
-    header("Location: login.php");
-    exit;
-}
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete'])) {
-    $fileToDelete = $_POST['fileToDelete'];
-    $uploadDir = dirname(__FILE__) . '/uploads/';
-    $fullPath = $uploadDir . basename($fileToDelete);
-    if (file_exists($fullPath) && strpos($fileToDelete, $_SESSION['user_id'] . '_') === 0) {
-        unlink($fullPath);
-    }
-}
-?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -155,39 +140,37 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete'])) {
     <div class="container">
         <div class="sidebar">
             <img src="https://i.imgur.com/zZiqVZ4.png" alt="Funfiles Logo">
-            <a href="home.php">Home</a>
-            <a href="index.php">Uploader</a>
-            <a href="filemanager.php">File Manager</a>
-            <a href="logout.php">Logout</a>
+            <a href="home.html">Home</a>
+            <a href="index.html">Uploader</a>
+            <a href="filemanager.html">File Manager</a>
+            <a href="logout.html">Logout</a>
         </div>
         <div class="content">
             <h1>Your Files</h1>
             <div class="file-list">
-                <?php
-                $uploadDir = dirname(__FILE__) . '/uploads/';
-                $userId = $_SESSION['user_id'];
-                $files = glob($uploadDir . $userId . '_*');
-                if (empty($files)) {
-                    echo '<p>No files uploaded yet.</p>';
-                } else {
-                    foreach ($files as $file) {
-                        $fileName = basename($file);
-                        $baseUrl = 'https://funfiles.xyz/uploads/';
-                        $downloadLink = $baseUrl . $fileName;
-                        $originalName = preg_replace('/^' . $userId . '_[a-f0-9]+_/', '', $fileName);
-                        echo '<div class="file-item">';
-                        echo '<a href="' . htmlspecialchars($downloadLink) . '" target="_blank">' . htmlspecialchars($originalName) . '</a>';
-                        echo '<div class="actions">';
-                        echo '<button class="copy-link" onclick="navigator.clipboard.writeText(\'' . htmlspecialchars($downloadLink) . '\'); alert(\'Link copied!\');">Copy</button>';
-                        echo '<form method="post" style="display:inline;" onsubmit="return confirm(\'Are you sure you want to delete ' . htmlspecialchars($originalName) . '?\');">';
-                        echo '<input type="hidden" name="fileToDelete" value="' . htmlspecialchars($fileName) . '">';
-                        echo '<button type="submit" name="delete" class="delete-btn">Delete</button>';
-                        echo '</form>';
-                        echo '</div>';
-                        echo '</div>';
-                    }
-                }
-                ?>
+                <!-- Static file list example -->
+                <div class="file-item">
+                    <a href="https://funfiles.xyz/uploads/sample_file1.pdf" target="_blank">sample_file1.pdf</a>
+                    <div class="actions">
+                        <button class="copy-link" onclick="navigator.clipboard.writeText('https://funfiles.xyz/uploads/sample_file1.pdf'); alert('Link copied!');">Copy</button>
+                        <form method="post" style="display:inline;" onsubmit="return confirm('Are you sure you want to delete sample_file1.pdf?');">
+                            <input type="hidden" name="fileToDelete" value="sample_file1.pdf">
+                            <button type="submit" name="delete" class="delete-btn">Delete</button>
+                        </form>
+                    </div>
+                </div>
+                <div class="file-item">
+                    <a href="https://funfiles.xyz/uploads/sample_file2.jpg" target="_blank">sample_file2.jpg</a>
+                    <div class="actions">
+                        <button class="copy-link" onclick="navigator.clipboard.writeText('https://funfiles.xyz/uploads/sample_file2.jpg'); alert('Link copied!');">Copy</button>
+                        <form method="post" style="display:inline;" onsubmit="return confirm('Are you sure you want to delete sample_file2.jpg?');">
+                            <input type="hidden" name="fileToDelete" value="sample_file2.jpg">
+                            <button type="submit" name="delete" class="delete-btn">Delete</button>
+                        </form>
+                    </div>
+                </div>
+                <!-- If no files, show this -->
+                <!-- <p>No files uploaded yet.</p> -->
             </div>
         </div>
     </div>
