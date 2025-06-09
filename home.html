@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Funfiles - Home</title>
+    <title>Funfiles</title>
     <link rel="icon" type="image/png" href="https://i.imgur.com/zZiqVZ4.png">
     <style>
         body {
@@ -16,6 +16,9 @@
             background-size: 400% 400%;
             animation: gradientBG 15s ease infinite;
             color: #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
         @keyframes gradientBG {
             0% { background-position: 0% 50%; }
@@ -64,14 +67,15 @@
             width: calc(100% - 250px);
             transition: margin-left 0.3s ease;
             display: flex;
-            flex-direction: column;
             justify-content: center;
             align-items: center;
-            text-align: center;
+            flex-direction: column;
+            gap: 20px;
         }
         h1 {
-            font-size: 32px;
+            font-size: 28px;
             margin-bottom: 20px;
+            text-align: center;
             color: #fff;
             text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
             animation: fadeIn 1s ease;
@@ -80,20 +84,22 @@
             from { opacity: 0; }
             to { opacity: 1; }
         }
-        p {
+        .buttons {
+            display: flex;
+            gap: 20px;
+        }
+        button {
+            padding: 15px 30px;
+            background: #2a5298;
+            color: #fff;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: transform 0.2s ease;
             font-size: 18px;
-            line-height: 1.6;
-            max-width: 600px;
-            color: #d3d3d3;
         }
-        a {
-            color: #4a90e2;
-            text-decoration: none;
-            margin-top: 20px;
-            display: inline-block;
-        }
-        a:hover {
-            text-decoration: underline;
+        button:hover {
+            transform: scale(1.05);
         }
     </style>
 </head>
@@ -102,16 +108,16 @@
         <div class="sidebar">
             <img src="https://i.imgur.com/zZiqVZ4.png" alt="Funfiles Logo">
             <a href="home.html">Home</a>
-            <a href="upload.html">Upload</a>
+            <a href="index.html">Uploader</a>
             <a href="filemanager.html">File Manager</a>
             <a href="logout.html">Logout</a>
         </div>
         <div class="content">
             <h1>Welcome to Funfiles</h1>
-            <p>
-                Funfiles is a simple and secure file-sharing platform designed to make uploading and sharing your files effortless.
-            </p>
-            <a href="upload.html">Click here to upload your first file</a>
+            <div class="buttons">
+                <button onclick="window.location.href='signup.html'">Sign Up</button>
+                <button onclick="window.location.href='login.html'">Log In</button>
+            </div>
         </div>
     </div>
 </body>
